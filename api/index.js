@@ -1,8 +1,11 @@
 const puppeteer = require("puppeteer");
 
-module.exports = async (req, res) => {
+module.exports = async function (req, res) {
   const { profileUrl } = req.query;
-  if (!profileUrl) return res.status(400).send("Missing profileUrl");
+  if (!profileUrl) {
+    res.status(400).send("Falta el parámetro profileUrl");
+    return;
+  }
 
   try {
     const browser = await puppeteer.launch({
@@ -12,7 +15,7 @@ module.exports = async (req, res) => {
 
     const page = await browser.newPage();
 
-    // PEGAR TUS COOKIES AQUÍ
+    // PEGAR TUS COOKIES DE LINKEDIN ACÁ si querés acceder a perfiles protegidos
     await page.setCookie(
       // { "name": "li_at", "value": "xxx", "domain": ".linkedin.com", ... }
     );
@@ -20,14 +23,11 @@ module.exports = async (req, res) => {
     await page.goto(profileUrl, { waitUntil: "networkidle2" });
 
     const postData = await page.evaluate(() => {
-      const texto = document.querySelector('span[dir="ltr"]')?.innerText || "Texto no encontrado";
+      const texto = document.querySelector('span[dir="ltr"]')?.innerText || "No se encontró texto";
       const fecha = document.querySelector('.update-components-actor__sub-description span')?.innerText || "Fecha no encontrada";
       return { texto, fecha };
     });
 
     await browser.close();
-    res.status(200).json(postData);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+    res.status(200).json
+
