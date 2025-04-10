@@ -1,0 +1,7 @@
+{
+  "name": "linkedin-scraper-vercel",
+  "version": "1.0.0",
+  "dependencies": {
+    "puppeteer": "^22.8.2"
+  }
+}
